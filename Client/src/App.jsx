@@ -4,6 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./Pages/Home/Home";
 import TransectionDashboard from "./Pages/TransectionDashboard/TransectionDashboard";
 import { ToastContainer } from "react-toastify";
+import Dashboard from "./Pages/Dashboard/Dashboard";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           path="/transection-dashboard"
           element={<TransectionDashboard />}
         />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </>
   );

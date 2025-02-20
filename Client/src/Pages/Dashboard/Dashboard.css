@@ -1,0 +1,31 @@
+.transection-dashboard {
+    width: 85vw;
+    margin: 50px auto 50px auto;
+    box-sizing: border-box;
+    background: #f9f9f9;
+}
+
+.transection-dashboard .middle {
+    width: 89%;
+    margin: 30px auto 30px auto;
+}
+
+.transection-dashboard .middle .header-container,
+.transection-dashboard .middle .content-container {
+    gap: 2px;
+    
+    display: grid;
+    grid-template-columns: 31px 202px 1fr 140px 90px 100px 130px;
+}
+
+.transection-dashboard .middle .header-container div {
+    border: 2px solid rgb(0, 75, 140);
+    font-weight: bold;
+    padding: 7px 10px;
+    border-radius: 2px;
+}
+
+.transection-dashboard .middle .content-container div{
+    border: 1px solid rgb(0, 162, 255);
+    margin-top: 4px;
+}
