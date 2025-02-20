@@ -5,12 +5,15 @@ export const getAllSeedController = async (req, res) => {
   console.log("Fetching and seeding data...");
 
   try {
-    const response = await fetch("https://s3.amazonaws.com/roxiler.com/product_transaction.json", {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
+    const response = await fetch(
+      "https://s3.amazonaws.com/roxiler.com/product_transaction.json",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
-    });
+    );
 
     if (!response.ok) {
       return res.status(500).json({
@@ -19,7 +22,7 @@ export const getAllSeedController = async (req, res) => {
       });
     }
 
-    const data = await response.json();  
+    const data = await response.json();
 
     if (!data || data.length === 0) {
       return res.status(500).json({
@@ -54,49 +57,38 @@ export const getAllSeedController = async (req, res) => {
   }
 };
 
-
-
 export const fetchAllSeedData = async (req, res) => {
   try {
-    const { month, search, page = 1, per_page = 10 } = req.query;
+    const { search, page = 1, per_page = 10 } = req.query;
 
-    // Build search query if search term is provided
     const searchQuery = search
       ? {
           $or: [
-            { title: { $regex: search, $options: "i" } }, // Search in title
-            { description: { $regex: search, $options: "i" } }, // Search in description
-            { price: { $regex: search, $options: "i" } }, // Search in price (as a string)
+            { title: { $regex: search, $options: "i" } },
+            { description: { $regex: search, $options: "i" } },
+            { price: { $regex: search, $options: "i" } },
           ],
         }
       : {};
 
-    // Build date filter if month is provided
-    const dateFilter = month
-      ? {
-          dateOfSale: {
-            $gte: moment(`${month} 01`, "MMMM DD").startOf("month").toDate(), // First day of the month
-            $lt: moment(`${month} 01`, "MMMM DD").endOf("month").toDate(), // Last day of the month
-          },
-        }
-      : {};
-
-    // Combine filters: date and search
     const filter = {
-      ...dateFilter,
       ...searchQuery,
     };
 
-    // Pagination setup
     const pageNumber = parseInt(page);
     const itemsPerPage = parseInt(per_page);
-    const skip = (pageNumber - 1) * itemsPerPage; // Number of items to skip based on page number
+    const skip = (pageNumber - 1) * itemsPerPage;
 
-    // Fetch filtered data from MongoDB
+    const lengthFetchedSeedData = await seedModel.find(filter);
+
+    const dataLength = lengthFetchedSeedData.length;
+    console.log(dataLength);
+
     const fetchedSeedData = await seedModel
       .find(filter)
-      .skip(skip) // Pagination
-      .limit(itemsPerPage); // Pagination
+      .skip(skip)
+      .limit(itemsPerPage);
+    console.log("total fetching at a single time" + fetchedSeedData.length);
 
     if (fetchedSeedData.length === 0) {
       return res.status(404).json({
@@ -105,10 +97,10 @@ export const fetchAllSeedData = async (req, res) => {
       });
     }
 
-    // Return success response with fetched data
     return res.status(200).json({
       success: true,
       message: "Data fetched successfully",
+      dataLength,
       data: fetchedSeedData,
     });
   } catch (error) {
@@ -116,5 +108,45 @@ export const fetchAllSeedData = async (req, res) => {
       success: false,
       message: `API error: ${error.message}`,
     });
+  }
+};
+
+// const dateFilter = month
+//       ? {
+//           dateOfSale: {
+//             $gte: moment(`${month} 01`, "MMMM DD").startOf("month").toDate(), // First day of the month
+//             $lt: moment(`${month} 01`, "MMMM DD").endOf("month").toDate(), // Last day of the month
+//           },
+//         }
+//       : {};
+
+export const selectedMonthSeedDataController = async (req, res) => {
+  try {
+    const { month, year = 2021 } = req.query;
+
+    if (!month) {
+      return res.status(400).json({ error: "Month is required" });
+    }
+
+    const startDate = moment(`${month} 01 ${year}`, "MMMM DD YYYY")
+      .startOf("month")
+      .toDate();
+    const endDate = moment(`${month} 01 ${year}`, "MMMM DD YYYY")
+      .endOf("month")
+      .toDate();
+
+    const salesData = await seedModel.find({
+      dateOfSale: {
+        $gte: startDate,
+        $lt: endDate,
+      },
+    });
+
+    console.log(salesData);
+
+    res.status(200).json({ success: true, data: salesData });
+  } catch (error) {
+    console.error("Error fetching sales data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };

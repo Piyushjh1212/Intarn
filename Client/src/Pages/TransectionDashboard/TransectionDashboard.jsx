@@ -4,12 +4,14 @@ import { toast } from "react-toastify";
 
 const TransectionDashboard = () => {
   const [fetchedData, setFetchedData] = useState([]);
+  const [dataLength, setDataLength] = useState(null);
   const [query, setQuery] = useState({
-    month: "",
     search: "",
     page: 1,
     per_page: 10,
   });
+
+  
 
   const fetchAllData = async () => {
     try {
@@ -36,6 +38,7 @@ const TransectionDashboard = () => {
       }
 
       setFetchedData(data.data);
+      setDataLength(data.dataLength);
       toast.success("Data fetched successfully!");
     } catch (error) {
       toast.error(error.message);
@@ -53,7 +56,7 @@ const TransectionDashboard = () => {
           value={query.month}
           onChange={(e) => setQuery({ ...query, month: e.target.value })}
         >
-            <option>Select Option</option>
+          <option>Select Option</option>
           {[
             "March",
             "April",
@@ -82,7 +85,7 @@ const TransectionDashboard = () => {
       </div>
 
       <div className="bottom">
-        <table border="1">
+        <table border="1" colSpan="0">
           <thead>
             <tr>
               <th>ID</th>
@@ -123,7 +126,7 @@ const TransectionDashboard = () => {
               onClick={() =>
                 setQuery((prev) => ({ ...prev, page: prev.page - 1 }))
               }
-              disabled={query.page <= 0}
+              disabled={query.page <= 1}
             >
               Previous
             </button>
@@ -131,12 +134,20 @@ const TransectionDashboard = () => {
               onClick={() =>
                 setQuery((prev) => ({ ...prev, page: prev.page + 1 }))
               }
-              disabled={query.per_page === query.page}
+              disabled={Math.ceil(dataLength / 10) === query.page}
             >
               Next
             </button>
           </div>
-          <div>Per Page: {query.per_page}</div>
+          <div>Per Page: {Math.ceil(dataLength / 10)}</div>
+        </div>
+      </div>
+      <div className="chart-preparation">
+        <div className="box">
+          <h2>Stastics - June</h2>
+          <div className="data">
+            <span>Total sale : 12458989 </span>
+          </div>
         </div>
       </div>
     </div>
