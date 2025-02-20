@@ -1,0 +1,32 @@
+.transection-dashboard {
+    width: 85vw;
+    margin: 50px auto 50px auto;
+    box-sizing: border-box;
+    background: #f9f9f9;
+}
+
+.transection-dashboard .page-details{
+    margin: 34px 0 34px 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.transection-dashboard .top {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.transection-dashboard .top input,
+.transection-dashboard .top select {
+    margin: 12px;
+    height: 34px;
+    width: 34%;
+    border-radius: 19px;
+    border: 1px solid gray;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    padding-left: 12px;
+}
