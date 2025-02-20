@@ -2,8 +2,6 @@ import moment from "moment";
 import seedModel from "../Models/seedModel.js";
 
 export const getAllSeedController = async (req, res) => {
-  console.log("Fetching and seeding data...");
-
   try {
     const response = await fetch(
       "https://s3.amazonaws.com/roxiler.com/product_transaction.json",
@@ -32,8 +30,6 @@ export const getAllSeedController = async (req, res) => {
     }
 
     await seedModel.deleteMany();
-
-    console.log(data);
     const savedData = await seedModel.insertMany(data);
 
     if (savedData && savedData.length > 0) {
@@ -82,13 +78,11 @@ export const fetchAllSeedData = async (req, res) => {
     const lengthFetchedSeedData = await seedModel.find(filter);
 
     const dataLength = lengthFetchedSeedData.length;
-    console.log(dataLength);
 
     const fetchedSeedData = await seedModel
       .find(filter)
       .skip(skip)
       .limit(itemsPerPage);
-    console.log("total fetching at a single time" + fetchedSeedData.length);
 
     if (fetchedSeedData.length === 0) {
       return res.status(404).json({
@@ -111,15 +105,6 @@ export const fetchAllSeedData = async (req, res) => {
   }
 };
 
-// const dateFilter = month
-//       ? {
-//           dateOfSale: {
-//             $gte: moment(`${month} 01`, "MMMM DD").startOf("month").toDate(), // First day of the month
-//             $lt: moment(`${month} 01`, "MMMM DD").endOf("month").toDate(), // Last day of the month
-//           },
-//         }
-//       : {};
-
 export const selectedMonthSeedDataController = async (req, res) => {
   try {
     const { month, year = 2021 } = req.query;
@@ -128,23 +113,35 @@ export const selectedMonthSeedDataController = async (req, res) => {
       return res.status(400).json({ error: "Month is required" });
     }
 
-    const startDate = moment(`${month} 01 ${year}`, "MMMM DD YYYY")
-      .startOf("month")
-      .toDate();
-    const endDate = moment(`${month} 01 ${year}`, "MMMM DD YYYY")
+    const startDate = moment(`${year}-${month}-01`, "YYYY-MMMM-DD").format(
+      "YYYY-MM-DD"
+    );
+
+    console.log(`${startDate}T20:29:54+05:30`);
+    const endDate = moment(`${year}-${month}-01`, "YYYY-MMMM-DD")
       .endOf("month")
-      .toDate();
+      .format("YYYY-MM-DD");
+
+    console.log(`${endDate}T20:29:54+05:30`);
 
     const salesData = await seedModel.find({
       dateOfSale: {
-        $gte: startDate,
-        $lt: endDate,
+        $gte: `${startDate}T20:29:54+05:30`,
+        $lt: `${endDate}T20:29:54+05:30`,
       },
     });
 
-    console.log(salesData);
+    if (!salesData) {
+      return res.status(500).json({
+        success: false,
+        message: `Data not found for the given specific date.`,
+      });
+    }
 
-    res.status(200).json({ success: true, data: salesData });
+    console.log(salesData.length);
+    res
+      .status(200)
+      .json({ success: true, message: `Data fetched`, data: salesData });
   } catch (error) {
     console.error("Error fetching sales data:", error);
     res.status(500).json({ error: "Internal Server Error" });

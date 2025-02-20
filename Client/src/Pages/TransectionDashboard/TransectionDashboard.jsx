@@ -10,8 +10,34 @@ const TransectionDashboard = () => {
     page: 1,
     per_page: 10,
   });
+  const [chartData, setChartData] = useState([]);
+  const [date, setDate] = useState({
+    year: "2022",
+    month: "March",
+  });
 
-  
+  const [soldItem, setSoldItem] = useState(0);
+  const [notSoldItem, setNotSoldItem] = useState(0);
+  const [totalSale, setTotalSale] = useState(0);
+
+  useEffect(() => {
+    let soldCount = 0;
+    let notSoldCount = 0;
+    let total = 0;
+
+    chartData.forEach((singleItem) => {
+      if (singleItem.sold) {
+        soldCount++;
+      } else {
+        notSoldCount++;
+      }
+      total += Number(singleItem.price) || 0;
+    });
+
+    setSoldItem(soldCount);
+    setNotSoldItem(notSoldCount);
+    setTotalSale(total);
+  }, [chartData]);
 
   const fetchAllData = async () => {
     try {
@@ -45,19 +71,67 @@ const TransectionDashboard = () => {
     }
   };
 
+  const selectedMonthData = async () => {
+    try {
+      const queryParams = new URLSearchParams(date).toString();
+      const response = await fetch(
+        `http://localhost:11007/api/v1/seed-data/monthly-data?${queryParams}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Something went wrong`);
+      }
+
+      const data = await response.json();
+
+      if (!data.success) {
+        toast.error(data.message);
+        return;
+      }
+
+      setChartData(data.data);
+      toast.success("Data fetched successfully!");
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   useEffect(() => {
     fetchAllData();
   }, [query]);
+
+  useEffect(() => {
+    selectedMonthData();
+  }, [date]);
 
   return (
     <div className="transection-dashboard">
       <div className="top">
         <select
-          value={query.month}
-          onChange={(e) => setQuery({ ...query, month: e.target.value })}
+          value={date.year}
+          onChange={(e) => setDate({ ...date, year: e.target.value })}
+        >
+          <option value="">Select year</option>
+          {[2021, 2022, 2023, 2024].map((year) => (
+            <option key={year} value={year}>
+              {year}
+            </option>
+          ))}
+        </select>
+        <select
+          value={date.month}
+          onChange={(e) => setDate({ ...date, month: e.target.value })}
         >
           <option>Select Option</option>
           {[
+            "January",
+            "February",
             "March",
             "April",
             "May",
@@ -68,8 +142,6 @@ const TransectionDashboard = () => {
             "October",
             "November",
             "December",
-            "January",
-            "February",
           ].map((month) => (
             <option key={month} value={month}>
               {month}
@@ -142,13 +214,11 @@ const TransectionDashboard = () => {
           <div>Per Page: {Math.ceil(dataLength / 10)}</div>
         </div>
       </div>
-      <div className="chart-preparation">
-        <div className="box">
-          <h2>Stastics - June</h2>
-          <div className="data">
-            <span>Total sale : 12458989 </span>
-          </div>
-        </div>
+      <div className="box">
+        <h2>Selected Date : {date.month + " " + date.year}</h2>
+        <div>Sold item: {soldItem}</div>
+        <div>Not sold item: {notSoldItem}</div>
+        <div>Total price: {totalSale}</div>
       </div>
     </div>
   );
