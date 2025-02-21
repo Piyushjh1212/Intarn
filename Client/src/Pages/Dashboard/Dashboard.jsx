@@ -155,6 +155,12 @@ const Dashboard = () => {
           onChange={(e) => setQuery({ ...query, search: e.target.value })}
         />
       </div>
+      <div className="box">
+        <h2>Selected Date : {date.month + " " + date.year}</h2>
+        <div>Sold item: {soldItem}</div>
+        <div>Not sold item: {notSoldItem}</div>
+        <div>Total price: {totalSale.toFixed(2)}</div>
+      </div>
       <div className="crud-operation">
         <div className="header-body">
           <div className="name">Id</div>
@@ -207,12 +213,7 @@ const Dashboard = () => {
         <div>Per Page: {Math.ceil(dataLength / 10)}</div>
       </div>
 
-      <div className="box">
-        <h2>Selected Date : {date.month + " " + date.year}</h2>
-        <div>Sold item: {soldItem}</div>
-        <div>Not sold item: {notSoldItem}</div>
-        <div>Total price: {totalSale.toFixed(2)}</div>
-      </div>
+      
     </div>
   );
 };
