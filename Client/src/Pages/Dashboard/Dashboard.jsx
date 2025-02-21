@@ -159,8 +159,8 @@ const Dashboard = () => {
         <h2>Selected Date : {date.month + " " + date.year}</h2>
         <div>Sold item: {soldItem}</div>
         <div>Not sold item: {notSoldItem}</div>
-        <div>Total price: {totalSale.toFixed(2)}</div>
-      </div>
+        <div>Total price: &#8377; {totalSale.toFixed(2)}</div>
+      </div>  
       <div className="crud-operation">
         <div className="header-body">
           <div className="name">Id</div>
@@ -181,7 +181,7 @@ const Dashboard = () => {
             </div>
             <div className="title">{item.title}</div>
             <div className="description">{item.description}</div>
-            <div className="action"> {item.price} </div>
+            <div className="action">&#8377; {item.price} </div>
             <div className="category">{item.category}</div>
             <div className="sold">{item.sold ? "Yes" : "No"}</div>
             <div className="image">
