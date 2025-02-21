@@ -155,32 +155,63 @@ const Dashboard = () => {
           onChange={(e) => setQuery({ ...query, search: e.target.value })}
         />
       </div>
-
-      <div className="middle">
-        <div className="header-container">
-          <div className="id">Id</div>
-          <div className="title">Title</div>
-          <div className="description">Description</div>
-          <div className="category">Category</div>
-          <div className="sold">Sold</div>
-          <div className="image">Image</div>
-          <div className="date">Date</div>
+      <div className="crud-operation">
+        <div className="header-body">
+          <div className="name">Id</div>
+          <div className="email">Title</div>
+          <div className="user-name">Description</div>
+          <div className="action">Price</div>
+          <div className="action">Category</div>
+          <div className="action">Sold</div>
+          <div className="action">Image</div>
         </div>
-        {fetchedData.map((item) => {
-          return (
-            <div key={item.id} className="content-container">
-              <div className="id">{item.id}</div>
-              <div className="title">{item.title}</div>
-              <div className="description">{item.description}</div>
-              <div className="category">{item.category}</div>
-              <div className="sold">{item.sold ? "Yes" : "Not"}</div>
-              <div className="image">
-                <img src={item.image} style={{ width: "100%" }} alt="" />
-              </div>
-              <div className="date">{item.dateOfSale}</div>
+        {fetchedData.map((item) => (
+          <div className="content-body" key={item.id}>
+            <div
+              className="id"
+              style={{ textAlign: "center", alignContent: "center" }}
+            >
+              {item.id}
             </div>
-          );
-        })}
+            <div className="title">{item.title}</div>
+            <div className="description">{item.description}</div>
+            <div className="action"> {item.price} </div>
+            <div className="category">{item.category}</div>
+            <div className="sold">{item.sold ? "Yes" : "No"}</div>
+            <div className="image">
+              <img style={{ width: "100%" }} src={item.image} alt="" />
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="page-details">
+        <div>Page No: {query.page}</div>
+        <div className="btns">
+          <button
+            onClick={() =>
+              setQuery((prev) => ({ ...prev, page: prev.page - 1 }))
+            }
+            disabled={query.page <= 1}
+          >
+            Previous
+          </button>
+          <button
+            onClick={() =>
+              setQuery((prev) => ({ ...prev, page: prev.page + 1 }))
+            }
+            disabled={Math.ceil(dataLength / 10) === query.page}
+          >
+            Next
+          </button>
+        </div>
+        <div>Per Page: {Math.ceil(dataLength / 10)}</div>
+      </div>
+
+      <div className="box">
+        <h2>Selected Date : {date.month + " " + date.year}</h2>
+        <div>Sold item: {soldItem}</div>
+        <div>Not sold item: {notSoldItem}</div>
+        <div>Total price: {totalSale.toFixed(2)}</div>
       </div>
     </div>
   );
